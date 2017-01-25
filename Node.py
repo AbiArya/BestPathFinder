@@ -11,3 +11,4 @@ class Node:
         self.centerBot=(0,0)
         self.topLeft=(0,0)
         self.hasRiver=False
+        self.hardToTraverse=False
