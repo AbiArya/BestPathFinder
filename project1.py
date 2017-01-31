@@ -1,25 +1,8 @@
 import pygame
 from random import randint
 from Node import Node
-import sys
-
-sys.setrecursionlimit(100000)
-
+import copy
 riv = []
-
-
-def generateMap(tmpGrid):
-    riv1=[]
-    riv2=[]
-    riv3=[]
-    riv4=[]
-    cloneGrid=list(tmpGrid)
-    tmpGrid, riv1 = makeRiver(tmpGrid, 0,riv1,cloneGrid)
-    tmpGrid,riv2=makeRiver(tmpGrid,0,riv2,cloneGrid)
-    #tmpGrid, riv3=makeRiver(tmpGrid,0,riv3,cloneGrid)
-    #tmpGrid,riv4=makeRiver(tmpGrid,0,riv4,cloneGrid)
-    return tmpGrid, riv1,riv2,riv3,riv4
-
 
 def makePartialBlock(tmpGrid):
     for row in range(120):
@@ -59,12 +42,12 @@ def makePartialBlock(tmpGrid):
     return tmpGrid
 
 def makeRiverIter(tmpMap):
-    BMap=list(tmpMap)
-    CMap=list(tmpMap)
+    BMap=copy.deepcopy(tmpMap)
+    CMap=copy.deepcopy(tmpMap)
     totCount=0
     counter=0
     appendRiv=[]
-    while(counter<3):
+    while(counter<4):
         riv=[]
         toContinue=0
         dist=0
@@ -73,571 +56,321 @@ def makeRiverIter(tmpMap):
             row=randint(0,119)
             col=0
             for i in range(0,21):
-                #print row
-                #print col
-                #print "range"
-                #print"\n"
-                BMap[row][col].hasRiver=True
-                riv.append(BMap[row][col].centerLeft)
-                dist=dist+1
-                col=col+1
-                which=0
+                if(BMap[row][col]==1):
+                    toContinue=-1
+                else:
+                    BMap[row][col]=1
+                    dist=dist+1
+                    col=col+1
+            which=0
+
             while (toContinue == 0):
-                #print row
-                #print col
-                #print "while"
-                #print totCount
-                #print"\n"
                 if (which == 0):
                         where = randint(1,
                                         10)  # if its 1-6, river goes in same dir. if 7/8, river goes up. if 9/10, river goes down.
                         if (where <= 6):
-                            BMap, row, col, dist, riv, toContinue, which = riverRight(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverRight(BMap, row, col, dist)
                         elif (where <= 8):
-                            BMap, row, col, dist, riv, toContinue, which = riverUp(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverUp(BMap, row, col, dist)
                         else:
-                            BMap, row, col, dist, riv, toContinue, which = riverDown(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverDown(BMap, row, col, dist)
                 elif (which == 1):
                         where = randint(1, 10)
                         if (where <= 6):
-                            BMap, row, col, dist, riv, toContinue, which = riverLeft(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverLeft(BMap, row, col, dist)
                         elif (where <= 8):
-                            BMap, row, col, dist, riv, toContinue, which = riverUp(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverUp(BMap, row, col, dist)
                         else:
-                            BMap, row, col, dist, riv, toContinue, which = riverDown(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverDown(BMap, row, col, dist)
                 elif (which == 2):
                         where = randint(1, 10)
                         if (where <= 6):
-                            BMap, row, col, dist, riv, toContinue, which = riverUp(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverUp(BMap, row, col, dist)
                         elif (where <= 8):
-                            BMap, row, col, dist, riv, toContinue, which = riverLeft(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverLeft(BMap, row, col, dist)
                         else:
-                            BMap, row, col, dist, riv, toContinue, which = riverRight(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverRight(BMap, row, col, dist)
                 else:
                         where = randint(1, 10)
                         if (where <= 6):
-                            BMap, row, col, dist, riv, toContinue, which = riverDown(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverDown(BMap, row, col, dist)
                         elif (where <= 8):
-                            BMap, row, col, dist, riv, toContinue, which = riverLeft(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverLeft(BMap, row, col, dist)
                         else:
-                            BMap, row, col, dist, riv, toContinue, which = riverRight(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverRight(BMap, row, col, dist)
             if(toContinue==1 and dist>=100):
-                    appendRiv.append(riv)
                     counter+=1
-                    CMap=list(BMap)
+                    CMap=copy.deepcopy(BMap)
             else:
-                    print "redo"
+                   # print "redo"
                     totCount+=1
-                    BMap=CMap
+                    BMap = copy.deepcopy(CMap)
                     riv = []
                     toContinue = 0
                     dist = 0
         elif(side==2):
             row=randint(0,119)
             col=159
+
             for i in range(0,21):
-                #print row
-                #print col
-                #print "range"
-                #print"\n"
-                BMap[row][col].hasRiver=True
-                riv.append(BMap[row][col].centerRight)
-                dist=dist+1
-                col=col-1
-                which=1
+                if(BMap[row][col]==1):
+                    toContinue=-1
+                    break
+                else:
+                    BMap[row][col]=1
+                    dist=dist+1
+                    col=col-1
+            which=1
             while (toContinue == 0):
-                #print row
-                #print col
-                #print "while"
-                #print totCount
-                #print"\n"
                 if (which == 0):
                         where = randint(1,
                                         10)  # if its 1-6, river goes in same dir. if 7/8, river goes up. if 9/10, river goes down.
                         if (where <= 6):
-                            BMap, row, col, dist, riv, toContinue, which = riverRight(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverRight(BMap, row, col, dist)
                         elif (where <= 8):
-                            BMap, row, col, dist, riv, toContinue, which = riverUp(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverUp(BMap, row, col, dist)
                         else:
-                            BMap, row, col, dist, riv, toContinue, which = riverDown(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverDown(BMap, row, col, dist)
                 elif (which == 1):
                         where = randint(1, 10)
                         if (where <= 6):
-                            BMap, row, col, dist, riv, toContinue, which = riverLeft(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverLeft(BMap, row, col, dist)
                         elif (where <= 8):
-                            BMap, row, col, dist, riv, toContinue, which = riverUp(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverUp(BMap, row, col, dist)
                         else:
-                            BMap, row, col, dist, riv, toContinue, which = riverDown(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverDown(BMap, row, col, dist)
                 elif (which == 2):
                         where = randint(1, 10)
                         if (where <= 6):
-                            BMap, row, col, dist, riv, toContinue, which = riverUp(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverUp(BMap, row, col, dist)
                         elif (where <= 8):
-                            BMap, row, col, dist, riv, toContinue, which = riverLeft(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverLeft(BMap, row, col, dist)
                         else:
-                            BMap, row, col, dist, riv, toContinue, which = riverRight(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverRight(BMap, row, col, dist)
                 else:
                         where = randint(1, 10)
                         if (where <= 6):
-                            BMap, row, col, dist, riv, toContinue, which = riverDown(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverDown(BMap, row, col, dist)
                         elif (where <= 8):
-                            BMap, row, col, dist, riv, toContinue, which = riverLeft(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverLeft(BMap, row, col, dist)
                         else:
-                            BMap, row, col, dist, riv, toContinue, which = riverRight(BMap, row, col, dist, riv)
+                            BMap, row, col, dist, toContinue, which = riverRight(BMap, row, col, dist)
             if(toContinue==1 and dist>=100):
-                    appendRiv.append(riv)
                     counter+=1
-                    CMap=list(BMap)
+                    CMap=copy.deepcopy(BMap)
             else:
-                    print "redo"
                     totCount+=1
-                    BMap=CMap
+                    BMap = copy.deepcopy(CMap)
                     riv = []
                     toContinue = 0
                     dist = 0
         elif(side == 3):
             col = randint(0, 159)
             row = 0
-            for i in range(0, 21):
-                # print row
-                # print col
-                # print "range"
-                # print"\n"
-                BMap[row][col].hasRiver = True
-                riv.append(BMap[row][col].centerBot)
-                dist = dist + 1
-                row = row+1
-                which = 3
+
+            for i in range(0,21):
+                if(BMap[row][col]==1):
+                    toContinue=-1
+                else:
+                    BMap[row][col]=1
+                    dist=dist+1
+                    row=row+1
+            which = 3
             while (toContinue == 0):
-                # print row
-                # print col
-                # print "while"
-                # print totCount
-                # print"\n"
+
                 if (which == 0):
                     where = randint(1,
                                     10)  # if its 1-6, river goes in same dir. if 7/8, river goes up. if 9/10, river goes down.
                     if (where <= 6):
-                        BMap, row, col, dist, riv, toContinue, which = riverRight(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverRight(BMap, row, col, dist)
                     elif (where <= 8):
-                        BMap, row, col, dist, riv, toContinue, which = riverUp(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverUp(BMap, row, col, dist)
                     else:
-                        BMap, row, col, dist, riv, toContinue, which = riverDown(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverDown(BMap, row, col, dist)
                 elif (which == 1):
                     where = randint(1, 10)
                     if (where <= 6):
-                        BMap, row, col, dist, riv, toContinue, which = riverLeft(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverLeft(BMap, row, col, dist)
                     elif (where <= 8):
-                        BMap, row, col, dist, riv, toContinue, which = riverUp(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverUp(BMap, row, col, dist)
                     else:
-                        BMap, row, col, dist, riv, toContinue, which = riverDown(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverDown(BMap, row, col, dist)
                 elif (which == 2):
                     where = randint(1, 10)
                     if (where <= 6):
-                        BMap, row, col, dist, riv, toContinue, which = riverUp(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverUp(BMap, row, col, dist)
                     elif (where <= 8):
-                        BMap, row, col, dist, riv, toContinue, which = riverLeft(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverLeft(BMap, row, col, dist)
                     else:
-                        BMap, row, col, dist, riv, toContinue, which = riverRight(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverRight(BMap, row, col, dist)
                 else:
                     where = randint(1, 10)
                     if (where <= 6):
-                        BMap, row, col, dist, riv, toContinue, which = riverDown(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverDown(BMap, row, col, dist)
                     elif (where <= 8):
-                        BMap, row, col, dist, riv, toContinue, which = riverLeft(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverLeft(BMap, row, col, dist)
                     else:
-                        BMap, row, col, dist, riv, toContinue, which = riverRight(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverRight(BMap, row, col, dist)
             if (toContinue == 1 and dist >= 100):
-                appendRiv.append(riv)
                 counter += 1
-                CMap = list(BMap)
+                CMap = copy.deepcopy(BMap)
             else:
                 print "redo"
                 totCount += 1
-                BMap = CMap
+                BMap = copy.deepcopy(CMap)
                 riv = []
                 toContinue = 0
                 dist = 0
         else:
+           # print "side 4"
+           # print counter
             col = randint(0, 119)
             row = 119
-            for i in range(0, 21):
-                # print row
-                # print col
-                # print "range"
-                # print"\n"
-                BMap[row][col].hasRiver = True
-                riv.append(BMap[row][col].centerTop)
-                dist = dist + 1
-                row = row - 1
-                which = 2
+            for i in range(0,21):
+                if(BMap[row][col]==1):
+                    toContinue=-1
+                else:
+                    BMap[row][col]=1
+                    dist=dist+1
+                    row=row-1
+            which = 2
             while (toContinue == 0):
-                # print row
-                # print col
-                # print "while"
-                # print totCount
-                # print"\n"
+
                 if (which == 0):
                     where = randint(1,
                                     10)  # if its 1-6, river goes in same dir. if 7/8, river goes up. if 9/10, river goes down.
                     if (where <= 6):
-                        BMap, row, col, dist, riv, toContinue, which = riverRight(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverRight(BMap, row, col, dist)
                     elif (where <= 8):
-                        BMap, row, col, dist, riv, toContinue, which = riverUp(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverUp(BMap, row, col, dist)
                     else:
-                        BMap, row, col, dist, riv, toContinue, which = riverDown(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverDown(BMap, row, col, dist)
                 elif (which == 1):
                     where = randint(1, 10)
                     if (where <= 6):
-                        BMap, row, col, dist, riv, toContinue, which = riverLeft(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverLeft(BMap, row, col, dist)
                     elif (where <= 8):
-                        BMap, row, col, dist, riv, toContinue, which = riverUp(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverUp(BMap, row, col, dist)
                     else:
-                        BMap, row, col, dist, riv, toContinue, which = riverDown(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverDown(BMap, row, col, dist)
                 elif (which == 2):
                     where = randint(1, 10)
                     if (where <= 6):
-                        BMap, row, col, dist, riv, toContinue, which = riverUp(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverUp(BMap, row, col, dist)
                     elif (where <= 8):
-                        BMap, row, col, dist, riv, toContinue, which = riverLeft(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverLeft(BMap, row, col, dist)
                     else:
-                        BMap, row, col, dist, riv, toContinue, which = riverRight(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverRight(BMap, row, col, dist)
                 else:
                     where = randint(1, 10)
                     if (where <= 6):
-                        BMap, row, col, dist, riv, toContinue, which = riverDown(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverDown(BMap, row, col, dist)
                     elif (where <= 8):
-                        BMap, row, col, dist, riv, toContinue, which = riverLeft(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverLeft(BMap, row, col, dist)
                     else:
-                        BMap, row, col, dist, riv, toContinue, which = riverRight(BMap, row, col, dist, riv)
+                        BMap, row, col, dist, toContinue, which = riverRight(BMap, row, col, dist)
             if (toContinue == 1 and dist >= 100):
-                appendRiv.append(riv)
                 counter += 1
-                CMap = list(BMap)
+                CMap = copy.deepcopy(BMap)
             else:
-                print "redo"
+                #print "redo"
                 totCount += 1
-                BMap = CMap
+                BMap = copy.deepcopy(CMap)
                 riv = []
                 toContinue = 0
                 dist = 0
-    if (totCount>25):
-        BMap=list(tmpMap)
-        CMap=list(tmpMap)
-        appendRiv=[]
-        counter=0
-        totCount=0
-    return appendRiv,BMap
+        if (totCount>25):
+            #print "REDOING IT"
+            BMap = copy.deepcopy(tmpMap)
+            totCount = 0
+            counter = 0
+            appendRiv = []
+            riv=[]
+            map=[]
+            dist=0
+    return BMap
 
 
-def makeRiver(tmpGrid, count,riverA,cloneGrid):
-    print count
-    if(count>10):
-        grid, rivA, rivB, rivC, rivD = generateMap(cloneGrid)
-        return grid,rivA,rivB,rivC,rivD
-    river=list(riverA)
-    BGrid = list(tmpGrid)
-    dist = 0
-    toContinue = 0
-    for i in range(0, 1):
-        side = randint(1,4)  # there are 4 sides on the grid, so decides which side to start on. 1 will be left, 2 will be right, 3 will be top, 4 will be bot
-        if (side == 1 or side == 2):
-            row = randint(0, 119)
-            # row=115
-            if (side == 1):
-                col = 0
-                for i in range(0, 21):
-                    BGrid[row][col].hasRiver = True
-                    river.append(BGrid[row][col].centerLeft)
-                    dist = dist + 1
-                    col = col + 1
-                which=0
-                while (toContinue == 0):
-                    if (which == 0):
-                        where = randint(1,10)  # if its 1-6, river goes in same dir. if 7/8, river goes up. if 9/10, river goes down.
-                        if (where <= 6):
-                            BGrid, row, col, dist, river, toContinue, which = riverRight(BGrid, row, col, dist, river)
-                        elif (where <= 8):
-                            BGrid, row, col, dist, river, toContinue, which = riverUp(BGrid, row, col, dist, river)
-                        else:
-                            BGrid, row, col, dist, river, toContinue, which = riverDown(BGrid, row, col, dist, river)
-                    elif (which == 1):
-                        where = randint(1, 10)
-                        if (where <= 6):
-                            BGrid, row, col, dist, river, toContinue, which = riverLeft(BGrid, row, col, dist, river)
-                        elif (where <= 8):
-                            BGrid, row, col, dist, river, toContinue, which = riverUp(BGrid, row, col, dist, river)
-                        else:
-                            BGrid, row, col, dist, river, toContinue, which = riverDown(BGrid, row, col, dist, river)
-                    elif (which == 2):
-                        where = randint(1, 10)
-                        if (where <= 6):
-                            BGrid, row, col, dist, river, toContinue, which = riverUp(BGrid, row, col, dist, river)
-                        elif (where <= 8):
-                            BGrid, row, col, dist, river, toContinue, which = riverLeft(BGrid, row, col, dist, river)
-                        else:
-                            BGrid, row, col, dist, river, toContinue, which = riverRight(BGrid, row, col, dist, river)
-                    else:
-                        where = randint(1, 10)
-                        if (where <= 6):
-                            BGrid, row, col, dist, river, toContinue, which = riverDown(BGrid, row, col, dist, river)
-                        elif (where <= 8):
-                            BGrid, row, col, dist, river, toContinue, which = riverLeft(BGrid, row, col, dist, river)
-                        else:
-                            BGrid, row, col, dist, river, toContinue, which = riverRight(BGrid, row, col, dist, river)
-
-                if (dist < 100 or toContinue==-1):
-                    count=count+1
-                    BGrid, river= makeRiver(tmpGrid, count,riverA,cloneGrid)
-                    return BGrid,river
-                else:
-                    return BGrid, river
-
-            else:
-
-                col = 159
-                for i in range(0, 21):
-                    BGrid[row][col].hasRiver = True
-                    river.append(BGrid[row][col].centerRight)
-                    dist = dist + 1
-                    col = col - 1
-                    which=1
-                while (toContinue == 0):
-                    if (which == 0):
-                        where = randint(1,10)  # if its 1-6, river goes in same dir. if 7/8, river goes up. if 9/10, river goes down.
-                        if (where <= 6):
-                            BGrid, row, col, dist, river, toContinue, which = riverRight(BGrid, row, col, dist, river)
-                        elif (where <= 8):
-                            BGrid, row, col, dist, river, toContinue, which = riverUp(BGrid, row, col, dist, river)
-                        else:
-                            BGrid, row, col, dist, river, toContinue, which = riverDown(BGrid, row, col, dist, river)
-                    elif (which == 1):
-                        where = randint(1, 10)
-                        if (where <= 6):
-                            BGrid, row, col, dist, river, toContinue, which = riverLeft(BGrid, row, col, dist, river)
-                        elif (where <= 8):
-                            BGrid, row, col, dist, river, toContinue, which = riverUp(BGrid, row, col, dist, river)
-                        else:
-                            BGrid, row, col, dist, river, toContinue, which = riverDown(BGrid, row, col, dist, river)
-                    elif (which == 2):
-                        where = randint(1, 10)
-                        if (where <= 6):
-                            BGrid, row, col, dist, river, toContinue, which = riverUp(BGrid, row, col, dist, river)
-                        elif (where <= 8):
-                            BGrid, row, col, dist, river, toContinue, which = riverLeft(BGrid, row, col, dist, river)
-                        else:
-                            BGrid, row, col, dist, river, toContinue, which = riverRight(BGrid, row, col, dist, river)
-                    else:
-                        where = randint(1, 10)
-                        if (where <= 6):
-                            BGrid, row, col, dist, river, toContinue, which = riverDown(BGrid, row, col, dist, river)
-                        elif (where <= 8):
-                            BGrid, row, col, dist, river, toContinue, which = riverLeft(BGrid, row, col, dist, river)
-                        else:
-                            BGrid, row, col, dist, river, toContinue, which = riverRight(BGrid, row, col, dist, river)
-
-                if (dist < 100 or toContinue==-1):
-                    count=count+1
-                    BGrid, river= makeRiver(tmpGrid, count,riverA,cloneGrid)
-                    return BGrid,river
-                else:
-                    return BGrid, river
-
-        else:
-            if (side == 3):
-                col = randint(0, 159)
-
-                row = 0
-                for i in range(0, 21):
-                    BGrid[row][col].hasRiver = True
-                    river.append(BGrid[row][col].centerTop)
-                    dist = dist + 1
-                    row = row + 1
-                which=4
-                while (toContinue == 0):
-                    if (which == 0):
-                        where = randint(1,10)  # if its 1-6, river goes in same dir. if 7/8, river goes up. if 9/10, river goes down.
-                        if (where <= 6):
-                            BGrid, row, col, dist, river, toContinue, which = riverRight(BGrid, row, col, dist, river)
-                        elif (where <= 8):
-                            BGrid, row, col, dist, river, toContinue, which = riverUp(BGrid, row, col, dist, river)
-                        else:
-                            BGrid, row, col, dist, river, toContinue, which = riverDown(BGrid, row, col, dist, river)
-                    elif (which == 1):
-                        where = randint(1, 10)
-                        if (where <= 6):
-                            BGrid, row, col, dist, river, toContinue, which = riverLeft(BGrid, row, col, dist, river)
-                        elif (where <= 8):
-                            BGrid, row, col, dist, river, toContinue, which = riverUp(BGrid, row, col, dist, river)
-                        else:
-                            BGrid, row, col, dist, river, toContinue, which = riverDown(BGrid, row, col, dist, river)
-                    elif (which == 2):
-                        where = randint(1, 10)
-                        if (where <= 6):
-                            BGrid, row, col, dist, river, toContinue, which = riverUp(BGrid, row, col, dist, river)
-                        elif (where <= 8):
-                            BGrid, row, col, dist, river, toContinue, which = riverLeft(BGrid, row, col, dist, river)
-                        else:
-                            BGrid, row, col, dist, river, toContinue, which = riverRight(BGrid, row, col, dist, river)
-                    else:
-                        where = randint(1, 10)
-                        if (where <= 6):
-                            BGrid, row, col, dist, river, toContinue, which = riverDown(BGrid, row, col, dist, river)
-                        elif (where <= 8):
-                            BGrid, row, col, dist, river, toContinue, which = riverLeft(BGrid, row, col, dist, river)
-                        else:
-                            BGrid, row, col, dist, river, toContinue, which = riverRight(BGrid, row, col, dist, river)
-
-                if (dist < 100 or toContinue==-1):
-                    count=count+1
-                    BGrid, river= makeRiver(tmpGrid, count,riverA,cloneGrid)
-                    return BGrid,river
-                else:
-                    return BGrid, river
-            else:
-                col = randint(0, 159)
-                row = 119
-                for i in range(0, 21):
-                    BGrid[row][col].hasRiver = True
-                    river.append(BGrid[row][col].centerBot)
-                    dist = dist + 1
-                    row = row - 1
-                    which=2
-                    while (toContinue == 0):
-                        if (which == 0):
-                            where = randint(1,10)  # if its 1-6, river goes in same dir. if 7/8, river goes up. if 9/10, river goes down.
-                            if (where <= 6):
-                                BGrid, row, col, dist, river, toContinue, which = riverRight(BGrid, row, col, dist,
-                                                                                             river)
-                            elif (where <= 8):
-                                BGrid, row, col, dist, river, toContinue, which = riverUp(BGrid, row, col, dist, river)
-                            else:
-                                BGrid, row, col, dist, river, toContinue, which = riverDown(BGrid, row, col, dist,
-                                                                                            river)
-                        elif (which == 1):
-                            where = randint(1, 10)
-                            if (where <= 6):
-                                BGrid, row, col, dist, river, toContinue, which = riverLeft(BGrid, row, col, dist,
-                                                                                            river)
-                            elif (where <= 8):
-                                BGrid, row, col, dist, river, toContinue, which = riverUp(BGrid, row, col, dist, river)
-                            else:
-                                BGrid, row, col, dist, river, toContinue, which = riverDown(BGrid, row, col, dist,
-                                                                                            river)
-                        elif (which == 2):
-                            where = randint(1, 10)
-                            if (where <= 6):
-                                BGrid, row, col, dist, river, toContinue, which = riverUp(BGrid, row, col, dist, river)
-                            elif (where <= 8):
-                                BGrid, row, col, dist, river, toContinue, which = riverLeft(BGrid, row, col, dist,
-                                                                                            river)
-                            else:
-                                BGrid, row, col, dist, river, toContinue, which = riverRight(BGrid, row, col, dist,
-                                                                                             river)
-                        else:
-                            where = randint(1, 10)
-                            if (where <= 6):
-                                BGrid, row, col, dist, river, toContinue, which = riverDown(BGrid, row, col, dist,
-                                                                                            river)
-                            elif (where <= 8):
-                                BGrid, row, col, dist, river, toContinue, which = riverLeft(BGrid, row, col, dist,
-                                                                                            river)
-                            else:
-                                BGrid, row, col, dist, river, toContinue, which = riverRight(BGrid, row, col, dist,
-                                                                                             river)
-
-                    if (dist < 100 or toContinue == -1):
-                        count=count+1
-                        BGrid, river = makeRiver(tmpGrid, count, riverA,cloneGrid)
-                        return BGrid, river
-                    else:
-                        return BGrid, river
-
-
-def riverRight(map, row, col, dist, riv):
+def riverRight(map, row, col, dist):
     cont = 0
     for i in range(0, 21):
         try:
             col = col + 1
-            if (map[row][col].hasRiver == False):
-                map[row][col].hasRiver = True
-                riv.append(map[row][col].centerLeft)
+            if (map[row][col]==0):
+                map[row][col] = 1
                 dist = dist + 1
                 if (col >= 159):
                     cont = 1
-                    riv.append(map[row][159].centerRight)
+                    map[row][159]=1
                     break
 
             else:
                 cont = -1
-                return map, row, col, dist, riv, cont, 0
+                return map, row, col, dist, cont, 0
         except IndexError:
-            return map, row, col, dist, riv, cont, 0
-    return map, row, col, dist, riv, cont, 0
+            return map, row, col, dist, cont, 0
+    return map, row, col, dist, cont, 0
 
 
-def riverLeft(map, row, col, dist, riv):
+def riverLeft(map, row, col, dist):
     cont = 0
     for i in range(0, 21):
         try:
             col = col - 1
-            if (map[row][col].hasRiver == False):
-                map[row][col].hasRiver = True
-                riv.append(map[row][col].centerRight)
+            if (map[row][col] ==0):
+                map[row][col] = 1
                 dist = dist + 1
                 if (col <= 0):
-                    riv.append(map[row][0].centerLeft)
+                    map[row][0]=1
                     cont = 1
                     break
             else:
                 cont = -1
-                return map, row, col, dist, riv, cont, 1
+                return map, row, col, dist, cont, 1
         except IndexError:
-            return map, row, col, dist, riv, cont, 1
-    return map, row, col, dist, riv, cont, 1
+            return map, row, col, dist, cont, 1
+    return map, row, col, dist, cont, 1
 
 
-def riverUp(map, row, col, dist, riv):
+def riverUp(map, row, col, dist):
     cont = 0
     for i in range(0, 21):
         try:
             row = row - 1
-            if (map[row][col].hasRiver == False):
-                map[row][col].hasRiver = True
-                riv.append(map[row][col].centerBot)
+            if (map[row][col] == 0):
+                map[row][col] = 1
                 dist = dist + 1
                 if (row <= 0):
-                    riv.append(map[0][col].centerTop)
+                    map[0][col]=1
                     cont = 1
                     break
 
             else:
                 cont = -1
-                return map, row, col, dist, riv, cont, 2
+                return map, row, col, dist, cont, 2
         except IndexError:
-            return map,row,col,dist,riv,cont,2
-    return map, row, col, dist, riv, cont, 2
+            return map,row,col,dist,cont,2
+    return map, row, col, dist, cont, 2
 
 
-def riverDown(map, row, col, dist, riv):
+def riverDown(map, row, col, dist):
     cont = 0
     for i in range(0, 21):
         try:
             row = row + 1
-            if (map[row][col].hasRiver == False):
-                map[row][col].hasRiver = True
-                riv.append(map[row][col].centerTop)
+            if (map[row][col] == 0):
+                map[row][col] = 1
                 dist = dist + 1
                 if (row >= 119):
-                    riv.append(map[119][col].centerBot)
+                    map[119][col]=1
                     cont = 1
                     break
             else:
                 cont = -1
-                return map, row, col, dist, riv, cont, 3
+                return map, row, col, dist, cont, 3
         except IndexError:
-            return map,row,col,dist,riv,cont,3
-    return map, row, col, dist, riv, cont, 3
+            return map,row,col,dist,cont,3
+    return map, row, col, dist, cont, 3
 
 
 '''
@@ -701,12 +434,49 @@ done = False
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 
+
 # This sets the WIDTH and HEIGHT of each grid location
 WIDTH = 6
 HEIGHT = 5
 # This sets the margin between each cell
 MARGIN = 1
-rivcount = 0
+rivcount=0
+
+stuff=[]
+
+for row in range(120):
+        # Add an empty array that will hold each cell
+        # in this row
+    stuff.append([])
+    for column in range(160):
+        stuff[row].append(0)  # Append a cell
+
+
+stuff1=makeRiverIter(stuff)
+
+counter=0
+while(counter<3840):
+    row=randint(0,119)
+    col=randint(0,159)
+    if(stuff1[row][col]==0):
+        stuff1[row][col]=2
+        counter+=1
+
+for row in range(120):
+    for column in range(160):
+        color = grid[row][column].color
+        if stuff1[row][column] == 1:
+            grid[row][column].color=(0,0,255)
+        elif(stuff1[row][column]==2):
+            grid[row][column].color=(0,0,0)
+        grid[row][column].topLeft = ((MARGIN + WIDTH) * column + MARGIN, (MARGIN + HEIGHT) * row + MARGIN)
+        grid[row][column].centerTop = ((MARGIN + WIDTH) * column + MARGIN + 3, (MARGIN + HEIGHT) * row + MARGIN)
+        grid[row][column].centerLeft = ((MARGIN + WIDTH) * column + MARGIN, (MARGIN + HEIGHT) * row + MARGIN + 2.5)
+        grid[row][column].centerRight = (
+            (MARGIN + WIDTH) * column + MARGIN + 6, (MARGIN + HEIGHT) * row + MARGIN + 2.5)
+        grid[row][column].centerBot = ((MARGIN + WIDTH) * column + MARGIN + 3, (MARGIN + HEIGHT) * row + MARGIN + 5)
+
+
 # -------- Main Program Loop -----------
 while not done:
     for event in pygame.event.get():  # User did something
@@ -736,33 +506,32 @@ while not done:
                 color = GREEN
             pygame.draw.rect(screen, color,
                              [(MARGIN + WIDTH) * column + MARGIN, (MARGIN + HEIGHT) * row + MARGIN, WIDTH, HEIGHT])
-            grid[row][column].topLeft = ((MARGIN + WIDTH) * column + MARGIN, (MARGIN + HEIGHT) * row + MARGIN)
-            grid[row][column].centerTop = ((MARGIN + WIDTH) * column + MARGIN + 3, (MARGIN + HEIGHT) * row + MARGIN)
-            grid[row][column].centerLeft = ((MARGIN + WIDTH) * column + MARGIN, (MARGIN + HEIGHT) * row + MARGIN + 2.5)
-            grid[row][column].centerRight = (
-            (MARGIN + WIDTH) * column + MARGIN + 6, (MARGIN + HEIGHT) * row + MARGIN + 2.5)
-            grid[row][column].centerBot = ((MARGIN + WIDTH) * column + MARGIN + 3, (MARGIN + HEIGHT) * row + MARGIN + 5)
 
     # Limit to 60 frames per second
     clock.tick(60)
+    #pygame.draw.lines(screen,(0,0,255),False,stuff[0],1)
+    #pygame.draw.lines(screen,(0,0,255),False,stuff[1],1)
+    #pygame.draw.lines(screen,(0,0,255),False,stuff[2],1)
+    #pygame.draw.lines(screen,(0,0,255),False,stuff[3],1)
 
     # Go ahead and update the screen with what we've drawn.
     # list = [grid[50][0].centerLeft, grid[50][100].centerLeft]
 
-    if (rivcount == 0):
-        riv,grid = makeRiverIter(grid)
-        rivcount = rivcount + 1
-        #print riv
 
-    if (rivcount > 0):
-        pygame.draw.lines(screen, (0, 0, 255), False, riv[0], 1)
-        pygame.draw.lines(screen, (0, 0, 255), False, riv[1], 1)
-        pygame.draw.lines(screen, (0, 0, 255), False, riv[2], 1)
+
+
+
+
+    #if (rivcount > 0):
+        #pygame.draw.lines(screen, (0, 0, 255), False, riv[0], 1)
+        #pygame.draw.lines(screen, (0, 0, 255), False, riv[1], 1)
+        #pygame.draw.lines(screen, (0, 0, 255), False, riv[2], 1)
         #pygame.draw.lines(screen, (0, 0, 255), False, rivD, 1)
 
     texts()
 
     pygame.display.flip()
+
 
 # Be IDLE friendly. If you forget this line, the program will 'hang'
 # on exit.
