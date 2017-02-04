@@ -376,6 +376,7 @@ def riverDown(map, row, col, dist):
 
 def insertFile(file):
     grid=[]
+    stuff=[]
     file_obj=open(file,'r')
     start=file_obj.readline()
     print start
@@ -389,28 +390,34 @@ def insertFile(file):
     for i in range(8):
         stuff=file_obj.readline()
 
-    for i in range(120):
+    for i in range(120):#0 reg, 1 is riv, 2 is blocked
         grid.append([])
+        stuff.append([])
         tmp=file_obj.readline()
         for num in range(160):
             tmpNode = Node()
             grid[i].append(tmpNode)
-
+            stuff[i].append(0)
             if(tmp[num]==0 or tmp[num]=='0'):
                 grid[i][num].color=(0,0,0)
                 grid[i][num].block=True
+                stuff[i][num]=2
             elif(tmp[num]==1 or tmp[num]=='1'):
                 grid[i][num].color=(255,255,255)
+                stuff[i][num]=0
             elif(tmp[num]==2 or tmp[num]=='2'):
                 grid[i][num].color=(100,100,100)
                 grid[i][num].hardToTraverse=True
+                stuff[i][num]=3
             elif(tmp[num]=='a'):
                 grid[i][num].color=(0,0,255)
                 grid[i][num].hasRiver=True
+                stuff[i][num]=1
             elif(tmp[num]=='b'):
                 grid[i][num].color=(0,0,255)
                 grid[i][num].hasRiver=True
                 grid[i][num].hardToTraverse=True
+                stuff[i][num]=4
             if(i==int(float(firstrow)) and num==int(float(firstcol))):
                 grid[i][num].start=True
                 grid[i][num].color=(0,255,0)
@@ -418,7 +425,7 @@ def insertFile(file):
                 grid[i][num].finish=True
                 grid[i][num].color=(255,0,0)
     file_obj.close()
-    return grid
+    return grid,stuff
 
 def outputFile(tmpGrid,centerstuff,startRow,startCol,endRow,endCol):
     fileobj=open("test.txt", 'w')
@@ -526,6 +533,21 @@ else:
             elif(stuff1[row][column]==6):#finish
                 grid[row][column].color=(255,0,0)
                 grid[row][column].finish=True
+
+    for row in range(120):
+        str1=''
+        for col in range(160):
+            if(grid[row][col].block==True):
+                stuff1[row][col]=2
+            elif(grid[row][col].hasRiver):
+                if(grid[row][col].hardToTraverse):
+                    stuff1[row][col]=4
+                else:
+                    stuff1[row][col]=1
+            elif(grid[row][col].hardToTraverse):
+                stuff1[row][col] = 3
+            else:
+                stuff1[row][col] = 0
 
     outputFile(grid,center,startRow,startCol,endRow,endCol)
 
