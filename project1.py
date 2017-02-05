@@ -388,7 +388,7 @@ def insertFile(file):
     secondrow=secondLine[1:secondrownum]
     secondcol=secondLine[secondrownum+1:len(secondLine)-2]
     for i in range(8):
-        stuff=file_obj.readline()
+        stuff1=file_obj.readline()
 
     for i in range(120):#0 reg, 1 is riv, 2 is blocked
         grid.append([])

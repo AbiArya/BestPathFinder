@@ -9,10 +9,7 @@ class Node:
         self.hardToTraverse=False
         self.start=False
         self.finish=False
-        self.centerLeft = (0, 0)
-        self.centerTop = (0, 0)
-        self.centerRight = (0, 0)
-        self.centerBot = (0, 0)
+        self.center=(0,0)
         self.topLeft = (0, 0)
         self.fx = 0;
         self.gx = 0
@@ -37,3 +34,6 @@ class Node:
         self.index = 0;
         self.x = 0;
         self.y = 0;
+        self.fx = 0
+        self.gx = 0
+        self.hx = 0
