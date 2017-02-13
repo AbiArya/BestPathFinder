@@ -4,7 +4,6 @@ from random import randint
 from Node import Node
 import copy
 import math
-import time
 riv = []
 from memprof import *
 def connectTheDots():
